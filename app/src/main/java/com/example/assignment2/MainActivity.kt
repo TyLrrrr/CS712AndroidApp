@@ -1,7 +1,8 @@
 package com.example.assignment2
 
-import android.widget.Toast
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,27 +31,131 @@ import com.example.assignment2.ui.theme.Assignment2Theme
 import kotlin.jvm.java
 
 class MainActivity : ComponentActivity() {
+
+    //Getting receiver var ready
+    private var receiver: MyBroadcastReceiver? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        //Receiver stuff
+        receiver = MyBroadcastReceiver()
+        val filter = android.content.IntentFilter("com.example.MY_ACTION")
+
+        // The following line doesn't work because it is past version 34 or 14+ one of those
+        //registerReceiver(receiver, filter)
+
+        //must use this new version
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // Android 14+
+            registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(receiver, filter)
+        }
+
         setContent {
             Assignment2Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
+                Scaffold(modifier = Modifier.fillMaxSize()) { //innerPadding ->
+                    /*Greeting(
                         name = "Tyler Sather",
                         studentID = "1541040"
                     )
                     buttonExplicit()
                     buttonImplicit()
                     buttonServices()
-                    buttonReciever()
+                    buttonReceiver()*/
+                    MainScreen()
                 }
 
             }
         }
     }
+    // Gotta make the receiver stop
+    override fun onDestroy() {
+        super.onDestroy()
+        receiver?.let {
+            try {
+                unregisterReceiver(it)
+            } catch (e: IllegalArgumentException) {
+                // Already unregistered, ignore
+            }
+        }
+        receiver = null
+    }
+}
+@Composable
+fun MainScreen() {
+    val context = LocalContext.current
+    val serviceStatus = remember { mutableStateOf(false) }
+    val buttonValue = remember { mutableStateOf("Start Service") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp), // overall padding
+        verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Greeting
+        Surface(color = Color.DarkGray) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.baseline_house_24),
+                    contentDescription = "Photo of Home",
+                    modifier = Modifier.width(100.dp).height(100.dp)
+                )
+                Text("Hi, my name is Tyler Sather!")
+                Text("My student ID is 1541040")
+            }
+        }
+
+        // Explicit Intent Button
+        Button(onClick = {
+            context.startActivity(Intent(context, MainActivity2::class.java))
+        }) {
+            Text("Explicit Intent")
+        }
+
+        // Implicit Intent Button
+        Button(onClick = {
+            val intent = Intent("com.example.assignment2.OPEN_SECOND_ACTIVITY")
+            context.startActivity(intent)
+        }) {
+            Text("Implicit Intent")
+        }
+
+        // Service Button
+        Button(onClick = {
+            if (serviceStatus.value) {
+                serviceStatus.value = false
+                buttonValue.value = "Start Service"
+                context.stopService(Intent(context, MyService::class.java))
+            } else {
+                serviceStatus.value = true
+                buttonValue.value = "Stop Service"
+                context.startService(Intent(context, MyService::class.java))
+            }
+        }) {
+            Text(buttonValue.value)
+        }
+
+        // Broadcast Receiver Button
+        Button(onClick = {
+            val intent = Intent("com.example.MY_ACTION")
+            context.sendBroadcast(intent)
+        }) {
+            Text("Send Broadcast")
+        }
+    }
 }
 
+
+//Old code, CLeaned up UI based on Chat gpt suggestion - I need a tutorial on how the basic lay out works
+/*
 @Composable
 fun Greeting(name: String, studentID: String) {
     Surface(
@@ -161,22 +266,21 @@ fun buttonServices() {
 }
 
 @Composable
-fun buttonReciever() {
+fun buttonReceiver() {
+    val context=LocalContext.current
     Column(
         modifier = Modifier.fillMaxSize().padding(top = 300.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val context = LocalContext.current
         Button(
             onClick = {
-                Toast.makeText(context, "Broadcast Received",Toast.LENGTH_LONG).show()
-
+                val intent = Intent("com.example.MY_ACTION")
+                context.sendBroadcast(intent)
             }
         ) {
             Text("Receiver")
         }
     }
 }
-
-
+*/

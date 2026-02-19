@@ -1,5 +1,6 @@
 package com.example.assignment2
 
+import android.widget.Toast
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -18,6 +19,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,14 +28,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.assignment2.ui.theme.Assignment2Theme
+import kotlin.jvm.java
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        //val people = listOf("Device Fragmentation", "OS Fragmentation", "Unstable and Dynamic Environment", "Rapid Changes", "Tool Support")
-
         setContent {
             Assignment2Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -41,9 +42,10 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
                         studentID = "1541040"
                     )
-                    buttonExplicit(
-                        LocalContext.current
-                    )
+                    buttonExplicit()
+                    buttonImplicit()
+                    buttonServices()
+                    buttonReciever()
                 }
 
             }
@@ -77,7 +79,8 @@ fun Greeting(name: String, modifier: Modifier = Modifier, studentID: String) {
     }
 }
 @Composable
-fun buttonExplicit(context: Context) {
+fun buttonExplicit() {
+    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -95,5 +98,88 @@ fun buttonExplicit(context: Context) {
     }
 }
 
+@Composable
+fun buttonImplicit() {
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier.fillMaxSize().padding(top = 100.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Button(
+            onClick = {
+                val intent = Intent("com.example.assignment2.OPEN_SECOND_ACTIVITY")
+                context.startActivity(intent)
+            }
+        ) {
+            Text("Implicit")
+        }
+    }
+}
+
+
+@Composable
+fun buttonServices() {
+    val context = LocalContext.current
+    // on below line creating variable
+    // for service status and button value.
+    val serviceStatus = remember {
+        mutableStateOf(false)
+    }
+    val buttonValue = remember {
+        mutableStateOf("Start Service")
+    }
+
+    // on below line we are creating a column,
+    Column(
+        // on below line we are adding a modifier to it,
+        modifier = Modifier.fillMaxSize().padding(top = 200.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        Button(onClick = {
+            if (serviceStatus.value) {
+                // service already running
+                // stop the service
+                serviceStatus.value = !serviceStatus.value
+                buttonValue.value = "Start Service"
+                context.stopService(Intent(context, MyService::class.java))
+            } else {
+                // service not running start service.
+                serviceStatus.value = !serviceStatus.value
+                buttonValue.value = "Stop Service"
+
+                // starting the service
+                context.startService(Intent(context, MyService::class.java))
+            }
+
+        }) {
+            Text(
+                text = buttonValue.value
+            )
+        }
+    }
+}
+
+@Composable
+fun buttonReciever() {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(top = 300.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val context = LocalContext.current
+        Button(
+            onClick = {
+                Toast.makeText(context, "Broadcast Received",Toast.LENGTH_LONG).show()
+
+            }
+        ) {
+            Text("Receiver")
+        }
+    }
+}
 
 

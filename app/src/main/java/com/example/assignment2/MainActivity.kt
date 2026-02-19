@@ -1,7 +1,6 @@
 package com.example.assignment2
 
 import android.widget.Toast
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -39,7 +38,6 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
                         name = "Tyler Sather",
-                        modifier = Modifier.padding(innerPadding),
                         studentID = "1541040"
                     )
                     buttonExplicit()
@@ -54,7 +52,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier, studentID: String) {
+fun Greeting(name: String, studentID: String) {
     Surface(
         color = Color.DarkGray,
         modifier = Modifier.padding(top = 200.dp, bottom = 500.dp)
@@ -86,7 +84,6 @@ fun buttonExplicit() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val context = LocalContext.current
         Button(
             onClick = {
                 //Toast.makeText(context, "Hello World",Toast.LENGTH_LONG).show()

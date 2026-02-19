@@ -1,7 +1,5 @@
 package com.example.assignment2
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -43,7 +41,7 @@ class MainActivity2 : ComponentActivity() {
                             ListItem(it)
                         }
                     }
-                    buttonExplicit2(LocalContext.current)
+                    buttonExplicit2()
                 }
             }
         }
@@ -65,7 +63,7 @@ fun ListItem(name: String){
 }
 
 @Composable
-fun buttonExplicit2(context: Context) {
+fun buttonExplicit2() {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -76,7 +74,6 @@ fun buttonExplicit2(context: Context) {
 
         Button(
             onClick = {
-                //Toast.makeText(context, "Hello World",Toast.LENGTH_LONG).show()
                 context.startActivity(Intent(context, MainActivity::class.java))
             }
         ) {

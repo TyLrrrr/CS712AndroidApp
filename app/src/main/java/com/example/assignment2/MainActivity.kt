@@ -1,5 +1,6 @@
 package com.example.assignment2
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
     //Getting receiver var ready
     private var receiver: MyBroadcastReceiver? = null
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -55,15 +57,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Assignment2Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { //innerPadding ->
-                    /*Greeting(
-                        name = "Tyler Sather",
-                        studentID = "1541040"
-                    )
-                    buttonExplicit()
-                    buttonImplicit()
-                    buttonServices()
-                    buttonReceiver()*/
+                Scaffold(modifier = Modifier.fillMaxSize()) {
                     MainScreen()
                 }
 
@@ -106,7 +100,9 @@ fun MainScreen() {
                 Image(
                     painter = painterResource(id = R.drawable.baseline_house_24),
                     contentDescription = "Photo of Home",
-                    modifier = Modifier.width(100.dp).height(100.dp)
+                    modifier = Modifier
+                        .width(100.dp)
+                        .height(100.dp)
                 )
                 Text("Hi, my name is Tyler Sather!")
                 Text("My student ID is 1541040")
@@ -149,6 +145,14 @@ fun MainScreen() {
             context.sendBroadcast(intent)
         }) {
             Text("Send Broadcast")
+        }
+
+
+        Button(onClick = {
+            context.startActivity(Intent(context, MainActivity3::class.java))
+
+        }) {
+            Text("Camera")
         }
     }
 }

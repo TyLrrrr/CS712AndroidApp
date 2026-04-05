@@ -26,7 +26,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import com.example.assignment2.ui.theme.Assignment2Theme
 import kotlin.jvm.java
@@ -86,7 +91,10 @@ fun MainScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp), // overall padding
+            .padding(16.dp)
+            .semantics {
+                testTagsAsResourceId = true
+            }, // overall padding
         verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -112,7 +120,9 @@ fun MainScreen() {
         // Explicit Intent Button
         Button(onClick = {
             context.startActivity(Intent(context, MainActivity2::class.java))
-        }) {
+        },
+            Modifier.testTag("Explicit")
+            ) {
             Text("Explicit Intent")
         }
 

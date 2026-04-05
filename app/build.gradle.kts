@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.uiautomator.v18)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -61,7 +62,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-
-
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.4.0-alpha05")
+    androidTestImplementation("androidx.test:runner:1.6.1")
     //implementation("com.google.accompanist:accompanist-permission:0.30.1")
 }

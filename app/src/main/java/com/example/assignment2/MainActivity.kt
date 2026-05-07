@@ -3,11 +3,15 @@ package com.example.assignment2
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +37,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.example.assignment2.ui.theme.Assignment2Theme
 import kotlin.jvm.java
 
@@ -41,6 +46,35 @@ class MainActivity : ComponentActivity() {
     //Getting receiver var ready
     private var receiver: MyBroadcastReceiver? = null
 
+    // Define the launcher at the class level
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission granted! Now we can safely start the activity
+            //startChallengesActivity()
+        } else {
+            // Permission denied. Handle the failure (e.g., show a message)
+            Toast.makeText(this, "Permission required to view challenges.", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun checkAndRequestPermission() {
+        val permission = "com.example.assignment2.MSE712"
+
+        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+            // Already have permission, go straight there
+            //startChallengesActivity()
+        } else {
+            // This triggers the system dialog
+            requestPermissionLauncher.launch(permission)
+        }
+    }
+    fun startChallengesActivity() {
+        val intent = Intent("com.example.assignment2.OPEN_SECOND_ACTIVITY")
+        startActivity(intent)
+    }
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,14 +82,14 @@ class MainActivity : ComponentActivity() {
 
         //Receiver stuff
         receiver = MyBroadcastReceiver()
-        val filter = android.content.IntentFilter("com.example.MY_ACTION")
+        val filter = IntentFilter("com.example.MY_ACTION")
 
         // The following line doesn't work because it is past version 34 or 14+ one of those
         //registerReceiver(receiver, filter)
 
         //must use this new version
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // Android 14+
-            registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
+            registerReceiver(receiver, filter, RECEIVER_EXPORTED)
         } else {
             registerReceiver(receiver, filter)
         }
@@ -63,11 +97,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             Assignment2Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    MainScreen()
+                    MainScreen(
+                        onExplicitIntentClick = { startChallengesActivity() }
+                    )
                 }
 
             }
         }
+
+        checkAndRequestPermission()
     }
     // Gotta make the receiver stop
     override fun onDestroy() {
@@ -82,8 +120,11 @@ class MainActivity : ComponentActivity() {
         receiver = null
     }
 }
+
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    onExplicitIntentClick: () -> Unit
+){
     val context = LocalContext.current
     val serviceStatus = remember { mutableStateOf(false) }
     val buttonValue = remember { mutableStateOf("Start Service") }
@@ -118,11 +159,10 @@ fun MainScreen() {
         }
 
         // Explicit Intent Button
-        Button(onClick = {
-            context.startActivity(Intent(context, MainActivity2::class.java))
-        },
-            Modifier.testTag("Explicit")
-            ) {
+        Button(
+            onClick = onExplicitIntentClick,
+            modifier = Modifier.testTag("Explicit")
+        ){
             Text("Explicit Intent")
         }
 

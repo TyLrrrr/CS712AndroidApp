@@ -65,4 +65,9 @@ dependencies {
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.4.0-alpha05")
     androidTestImplementation("androidx.test:runner:1.6.1")
     //implementation("com.google.accompanist:accompanist-permission:0.30.1")
+
+    implementation("androidx.activity:activity:1.13.0")
+
+    implementation("androidx.fragment:fragment-ktx:1.8.9")
+
 }
